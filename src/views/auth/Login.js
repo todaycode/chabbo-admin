@@ -32,6 +32,7 @@ import SnackbarContent from "@material-ui/core/SnackbarContent";
 // core components
 import componentStyles from "assets/theme/views/auth/login.js";
 import { login } from '../../actions/auth';
+import bg from 'assets/img/bg.png';
 
 const useStyles = makeStyles(componentStyles);
 const useSnackBarStyles = makeStyles(snacbarStyles);
@@ -78,7 +79,8 @@ function Login({ login, isAuthenticated, alertText }) {
 
   return (
     <>
-    <div className="main-content" ref={mainContent}>
+    <div className="main-content" ref={mainContent}
+    style={{backgroundImage: `url(${bg})`, backgroundSize: "100% 100%"}}>
         <AuthHeader />
         <Container
           component={Box}
@@ -119,9 +121,9 @@ function Login({ login, isAuthenticated, alertText }) {
                       </div>
                     }/>) : (<div />)}
                   
-                    <Box fontSize="80%" fontWeight="400" component="small">
+                    {/* <Box fontSize="80%" fontWeight="400" component="small">
                       Or sign in with credentials
-                    </Box>
+                    </Box> */}
                   </Box>
                   <FormControl
                     variant="filled"
@@ -165,7 +167,7 @@ function Login({ login, isAuthenticated, alertText }) {
                       minLength="6"
                     />
                   </FormControl>
-                  <FormControlLabel
+                  {/* <FormControlLabel
                     value="end"
                     control={<Checkbox color="primary" />}
                     label="Remeber me"
@@ -174,7 +176,7 @@ function Login({ login, isAuthenticated, alertText }) {
                       root: classes.formControlLabelRoot,
                       label: classes.formControlLabelLabel,
                     }}
-                  />
+                  /> */}
                   <Box textAlign="center" marginTop="1.5rem" marginBottom="1.5rem">
                     <Button color="primary" variant="contained" onClick={onSubmit}>
                       {loading ? (<CircularProgress size={20} style={{color: "white",marginRight:"10px"}}/>) : (<></>)}

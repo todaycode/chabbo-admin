@@ -36,7 +36,7 @@ const Footer = () => {
               rel="noopener noreferrer"
               target="_blank"
             >
-              Alex Tim
+              Chabbo Team
             </a>
           </div>
         </Grid>
@@ -74,7 +74,7 @@ const Footer = () => {
                 root: classes.listItemRoot,
               }}
             >
-              Alex Tim
+              Chabbo Team
             </ListItem>
 
             <ListItem

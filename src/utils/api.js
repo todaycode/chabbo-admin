@@ -2,8 +2,14 @@ import axios from "axios";
 import store from "../store";
 import { LOGOUT } from "../actions/types";
 
+// const api = axios.create({
+//   baseURL: "https://chad-sob.herokuapp.com/api",
+//   headers: {
+//     "Content-Type": "application/json"
+//   }
+// });
 const api = axios.create({
-  baseURL: "https://chad-sob.herokuapp.com/api",
+  baseURL: "http://localhost:3000",
   headers: {
     "Content-Type": "application/json"
   }

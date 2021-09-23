@@ -30,7 +30,7 @@ import snacbarStyles from "assets/theme/components/snackbar.js";
 import SnackbarContent from "@material-ui/core/SnackbarContent";
 // core components
 import componentStyles from "assets/theme/views/auth/login.js";
-
+import bg from 'assets/img/bg.png';
 
 const useStyles = makeStyles(componentStyles);
 const useSnackBarStyles = makeStyles(snacbarStyles);
@@ -79,7 +79,8 @@ function Register({ setAlert, register, isAuthenticated, alertText }) {
   
   return (
     <>
-    <div className="main-content" ref={mainContent}>
+    <div className="main-content" ref={mainContent}
+       style={{backgroundImage: `url(${bg})`, backgroundSize: "100% 100%"}}>
         <AuthHeader />
         {/* Page content */}
         <Container
@@ -95,14 +96,9 @@ function Register({ setAlert, register, isAuthenticated, alertText }) {
                   <CardHeader
                     className={classes.cardHeader}
                     title={
-                      <Box
-                        fontSize="80%"
-                        fontWeight="400"
-                        component="small"
-                        color={theme.palette.gray[600]}
-                      >
-                        Sign up with
-                      </Box>
+                      <Box fontSize="100%" fontWeight="400" component="small" color={theme.palette.gray[600]} style={{fontSize:"30px"}}>
+                      <b>Sign Up</b>
+                    </Box>
                     }
                     titleTypographyProps={{
                       component: Box,
@@ -130,9 +126,6 @@ function Register({ setAlert, register, isAuthenticated, alertText }) {
                           <strong>Error! &nbsp;&nbsp;</strong> {alertText[alertText.length-1].msg}!
                         </>
                       }/>) : (<div />)}
-                      <Box fontSize="80%" fontWeight="400" component="small">
-                        Or sign up with credentials
-                      </Box>
                     </Box>
                     <FormControl
                       variant="filled"
@@ -143,7 +136,7 @@ function Register({ setAlert, register, isAuthenticated, alertText }) {
                       <FilledInput
                         autoComplete="off"
                         type="text"
-                        placeholder="Name"
+                        placeholder="UserName"
                         startAdornment={
                           <InputAdornment position="start">
                             <School />
@@ -197,44 +190,6 @@ function Register({ setAlert, register, isAuthenticated, alertText }) {
                         required
                       />
                     </FormControl>
-                    <Box
-                      fontStyle="italic"
-                      fontSize="1rem"
-                      color={theme.palette.gray[600]}
-                      marginBottom=".5rem"
-                    >
-                      <Box component="small" fontSize="80%">
-                        password strength:{" "}
-                        <Box
-                          component="span"
-                          fontWeight="700"
-                          color={theme.palette.success.main}
-                        >
-                          strong
-                        </Box>
-                      </Box>
-                    </Box>
-                    <FormControlLabel
-                      value="end"
-                      control={<Checkbox color="primary" />}
-                      label={
-                        <>
-                          I agree with the{" "}
-                          <Box
-                            color={theme.palette.primary.main}
-                            component="a"
-                            textDecoration="none"
-                          >
-                            Privacy Policy
-                          </Box>
-                        </>
-                      }
-                      labelPlacement="end"
-                      classes={{
-                        root: classes.formControlLabelRoot,
-                        label: classes.formControlLabelLabel,
-                      }}
-                    />
                     <Box textAlign="center" marginTop="1.5rem" marginBottom="1.5rem">
                       <Button color="primary" variant="contained" onClick={onSubmit}>
                         Create account

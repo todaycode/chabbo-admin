@@ -34,7 +34,7 @@ const Footer = () => {
               rel="noopener noreferrer"
               target="_blank"
             >
-              Alex Tim
+              Chabbo Team
             </a>
           </div>
         </Box>
@@ -62,7 +62,7 @@ const Footer = () => {
                 root: classes.listItemRoot,
               }}
             >
-              Alex Tim
+              Chabbo Team
             </ListItem>
 
             <ListItem

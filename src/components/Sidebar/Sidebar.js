@@ -191,7 +191,7 @@ export default function Sidebar({ routes, logo, dropdown, input }) {
     });
   };
   let logoImage = (
-    <img alt={logo.imgAlt} className={classes.logoClasses} src={logo.imgSrc} style={{maxHeight:"unset",height:"80px"}}/>
+    <img alt={logo.imgAlt} className={classes.logoClasses} src={logo.imgSrc} style={{width:"80%",height:"50px"}}/>
   );
   let logoObject =
     logo && logo.innerLink ? (

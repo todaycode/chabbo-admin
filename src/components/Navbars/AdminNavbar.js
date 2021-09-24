@@ -14,6 +14,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import NavbarDropdown from "components/Dropdowns/NavbarDropdown.js";
 
 import componentStyles from "assets/theme/components/admin-navbar.js";
+import topImage3 from "assets/img/topbar-image3.jpg";
 
 const useStyles = makeStyles(componentStyles);
 
@@ -25,7 +26,7 @@ export default function AdminNavbar({ brandText }) {
         position="fixed"
         elevation={1}
         classes={{ root: classes.appBarRoot }}
-        style={{position: "fixed",  background:' -webkit-linear-gradient(87deg,#11cdef,#1171ef)', opacity: "0.85"}}
+        style={{position: "fixed",  background:`url(${topImage3})`}}
       >
         <Toolbar disableGutters>
           <Container

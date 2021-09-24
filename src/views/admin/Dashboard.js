@@ -30,7 +30,6 @@ function Dashboard() {
   };
   return (
     <>
-      <Header />
       {/* Page content */}
       <Container maxWidth={false} component={Box}marginTop="-6rem" classes={{ root: classes.containerRoot }}>
         <Grid container>

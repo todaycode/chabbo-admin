@@ -206,7 +206,7 @@ export default function Sidebar({ routes, logo, dropdown, input }) {
   return (
     <>
       <Hidden smDown implementation="css">
-        <Drawer variant="permanent" anchor="left" open>
+        <Drawer variant="permanent" anchor="left" classes={{paper: classes.drawerPaper}} open>
           <Box paddingBottom="0rem">{logoObject}</Box>
           <List classes={{ root: classes.listRoot }}>
             {createLinks(routes)}
@@ -268,15 +268,15 @@ export default function Sidebar({ routes, logo, dropdown, input }) {
               onClick={handleMenuClose}
             />
           </Box>
-          <Box
+          {/* <Box
             component={Divider}
             marginBottom="1rem!important"
             marginLeft="1.25rem!important"
             marginRight="1.25rem!important"
-          />
-          <Box paddingLeft="1.25rem" paddingRight="1.25rem">
+          /> */}
+          {/* <Box paddingLeft="1.25rem" paddingRight="1.25rem">
             {input}
-          </Box>
+          </Box> */}
           <List classes={{ root: classes.listRoot }}>
             {createLinks(routes)}
           </List>

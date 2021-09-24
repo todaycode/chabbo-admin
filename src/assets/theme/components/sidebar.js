@@ -1,11 +1,16 @@
+import menuImage4 from "assets/img/menu-image4.jpg";
+
 const componentStyles = (theme) => ({
+  drawerPaper: {
+    backgroundImage: `url(${menuImage4})`
+  },
   listRoot: {
-    marginTop: "2rem",
+    marginTop: "0rem",
     height: "100%",
   },
   listItemRoot: {
     display: "flex",
-    fontSize: ".9rem",
+    fontSize: "1rem",
     color: theme.palette.sidebarLinks.main,
     padding: ".65rem 1.5rem !important",
     "&:hover": {
@@ -56,7 +61,7 @@ const componentStyles = (theme) => ({
   title: {
     paddingTop: ".25rem",
     paddingBottom: ".25rem",
-    fontSize: ".75rem",
+    fontSize: ".9rem",
     textTransform: "uppercase",
     letterSpacing: ".04em",
     paddingLeft: "1.5rem",
@@ -106,6 +111,7 @@ const componentStyles = (theme) => ({
   },
   menuPaper: {
     width: "calc(100% - 2rem)",
+    backgroundImage: `url(${menuImage4})`
   },
   outlineNone: {
     outline: "none!important",

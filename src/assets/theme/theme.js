@@ -32,8 +32,8 @@ const theme = createMuiTheme({
       main: "rgba(" + hexToRgb(themeColors.white.main) + ", 0.95)",
     },
     sidebarLinks: {
-      main: "rgba(" + hexToRgb(themeColors.black.main) + ", 0.5)",
-      dark: "rgba(" + hexToRgb(themeColors.black.main) + ", 0.9)",
+      main: "rgba(" + hexToRgb(themeColors.white.main) + ", 0.5)",
+      dark: "rgba(" + hexToRgb(themeColors.white.main) + ", 0.9)",
     },
     adminNavbarSearch: {
       main: "rgba(" + hexToRgb(themeColors.white.main) + ", 0.6)",

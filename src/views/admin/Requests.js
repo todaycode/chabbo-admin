@@ -1,66 +1,286 @@
 import React from "react";
-
+import { useSelector, useDispatch } from "react-redux";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { Box, Button, Card, CardContent, CardHeader, Container, Grid, LinearProgress, FormControl, Select,
-        Table, TableBody, TableContainer, TableCell, TableHead, TableRow, Typography, MenuItem, Tooltip} from "@material-ui/core";
-import IconButton from '@material-ui/core/IconButton';
-import DeleteIcon from '@material-ui/icons/Delete';
-import CallMissedOutgoingIcon from '@material-ui/icons/CallMissedOutgoing';
-import ArrowDownward from "@material-ui/icons/ArrowDownward";
-import ArrowUpward from "@material-ui/icons/ArrowUpward";
-import Dialog from "@material-ui/core/Dialog";
-import DialogContent from "@material-ui/core/DialogContent";
-import Header from "components/Headers/Header.js";
+         TableBody, TableContainer, TableCell, TableHead, TableRow, Typography, MenuItem, Tooltip,
+         } from "@material-ui/core";
+import EditIcon from '@material-ui/icons/Edit';
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import componentStyles from "assets/theme/views/admin/dashboard.js";
-import Checkbox from "@material-ui/core/Checkbox";
-import FilledInput from "@material-ui/core/FilledInput";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import Slide from "@material-ui/core/Slide";
 // @material-ui/icons components
-import Email from "@material-ui/icons/Email";
-import Lock from "@material-ui/icons/Lock";
-import Datatable from "components/Tables/Datatable"
-import MaterialTable from 'material-table';
+import { Table, Column, HeaderCell, Cell  } from 'rsuite-table';
+import { Popover,Whisper, Dropdown, Divider, Pagination, Checkbox, IconButton, Panel,
+Tag} from 'rsuite';
+import TimeAgo from 'timeago-react';
 
+const dateStyle = 'en-US'
 const useStyles = makeStyles(componentStyles);
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="down" ref={ref} {...props} />;
-});
 function Requests() {
   const classes = useStyles();
   const theme = useTheme();
-  const [activeNav, setActiveNav] = React.useState(1);
+  const data = useSelector(state => state.request);
+  
+  const [checkedKeys, setCheckedKeys] = React.useState([]);
+  const [limit, setLimit] = React.useState(10);
+  const [page, setPage] = React.useState(1);
+  const [sortColumn, setSortColumn] = React.useState();
+  const [sortType, setSortType] = React.useState();
+  const [loading, setLoading] = React.useState(false);
 
-  const columns = [
-    { title: language.first_name, field: 'firstName', initialEditValue: '' },
-    { title: language.last_name, field: 'lastName', initialEditValue: '' },
-    { title: language.email, field: 'email'},
-    { title: language.mobile, field: 'mobile'},
-    { title: 'Photo',  field: 'image', render: rowData => rowData.image?<img alt='Profile' src={rowData.image} style={{width: 50,borderRadius:'50%'}}/>:null, editable:'never'},
-    { title: 'CreatedAt', field: 'created_on', editable:'never', defaultSort:'desc',render: rowData => rowData.createdAt?new Date(rowData.createdAt).toLocaleString(dateStyle):null},
-    { title: "Username", field: 'username', initialEditValue: '' },
-    { title: "Email", field: 'email', initialEditValue: '' },
-    { title: "Category", field: 'vehicleNumber', initialEditValue: '' },
-    { title: language.other_info, field: 'other_info', initialEditValue: '' },
-    { title: language.car_type, field: 'carType',lookup: cars},
-    { title: language.account_approve,  field: 'approved', type:'boolean', initialEditValue: true },
-    { title: language.driver_active,  field: 'driverActiveStatus', type:'boolean', initialEditValue: true},
-    { title: language.lisence_image,  field: 'licenseImage',render: rowData => rowData.licenseImage?<img alt='License' src={rowData.licenseImage} style={{width: 100}}/>:null, editable:'never'},
-    { title: language.wallet_balance,  field: 'walletBalance', type:'numeric' , editable:'never', initialEditValue: 0},
-    { title: language.signup_via_referral, field: 'signupViaReferral', editable:'never' },
-    { title: language.referralId,  field: 'referralId', editable:'never', initialEditValue: '' },
-    { title: language.bankName,  field: 'bankName', initialEditValue: '' },
-    { title: language.bankCode,  field: 'bankCode', initialEditValue: '' },
-    { title: language.bankAccount,  field: 'bankAccount', initialEditValue: '' },
-    { title: language.queue,  field: 'queue', type:'boolean', initialEditValue: false },
-];
+  let checked = false;
+  let indeterminate = false;
+
+  const handleChangeLimit = dataKey => {
+    setPage(1);
+    setLimit(dataKey);
+  };
+  if (checkedKeys.length === data.length) {
+    checked = true;
+  } else if (checkedKeys.length === 0) {
+    checked = false;
+  } else if (checkedKeys.length > 0 && checkedKeys.length < data.length) {
+    indeterminate = true;
+  }
+
+  const handleCheckAll = (value, checked) => {
+    const keys = checked ? data.map(item => item.id) : [];
+    setCheckedKeys(keys);
+  };
+  const handleCheck = (value, checked) => {
+    const keys = checked ? [...checkedKeys, value] : checkedKeys.filter(item => item !== value);
+    setCheckedKeys(keys);
+  };
+  //sort//////////////////
+  const getData = () => {
+    if (sortColumn && sortType) {
+      return data.sort((a, b) => {
+        let x = a[sortColumn];
+        let y = b[sortColumn];
+        if (typeof x === 'string') {
+          x = x.charCodeAt();
+        }
+        if (typeof y === 'string') {
+          y = y.charCodeAt();
+        }
+        if (sortType === 'asc') {
+          return x - y;
+        } else {
+          return y - x;
+        }
+      });
+    }
+    return data;
+  };
+
+  const handleSortColumn = (sortColumn, sortType) => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setSortColumn(sortColumn);
+      setSortType(sortType);
+    }, 500);
+  };
+const NameCell = ({ rowData, dataKey, ...props }) => {
+  const speaker = (
+    <Popover title="Description">
+      <p>
+        <b>Name:</b> {`${rowData.username}`}{' '}
+      </p>
+      <p>
+        <b>Email:</b> {rowData.email}{' '}
+      </p>
+      <p>
+        <b>Category:</b> {rowData.category}{' '}
+      </p>
+    </Popover>
+  );
+
+  return (
+    <Cell {...props}>
+      <Whisper placement="top" speaker={speaker}>
+        <a>{rowData[dataKey].toLocaleString()}</a>
+      </Whisper>
+    </Cell>
+  );
+};
+
+const StatusCell = ({ rowData, dataKey, ...props }) => {
+if(rowData[dataKey] == 'pending'){
+  return(<Cell {...props} style={{ paddingTop: 10 }}>
+    <Tag color="violet">Pending</Tag>
+  </Cell>)
+}else if(rowData[dataKey] == 'allowed'){
+  return(<Cell {...props} style={{ paddingTop: 10 }}>
+   <Tag color="green">Allowed</Tag>
+  </Cell>)
+}else{
+    return(<Cell {...props} style={{ paddingTop: 10 }}>
+   <Tag color="red">Denied</Tag>
+  </Cell>)
+}
+}
+const ImageCell = ({ rowData, dataKey, ...props }) => (
+  <Cell {...props} style={{ padding: 0 }}>
+    <div
+     style={{
+         display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+      <div
+        style={{
+          width: 40,
+          height: 40,
+          borderRadius: 20,
+          marginTop: 2,
+          backgroundImage: `url(${rowData[dataKey]})`,
+          backgroundSize: "100% 100%",
+        }}
+      >
+      </div>
+    </div>
+  </Cell>
+);
+const CheckCell = ({ rowData, onChange, checkedKeys, dataKey, ...props }) => (
+  <Cell {...props} style={{ padding: 0 }}>
+    <div style={{ lineHeight: '46px' }}>
+      <Checkbox
+        value={rowData[dataKey]}
+        inline
+        onChange={onChange}
+        checked={checkedKeys.some(item => item === rowData[dataKey])}
+      />
+    </div>
+  </Cell>
+);
+
+const renderMenu = ({ onClose, left, top, className }, ref) => {
+  const handleSelect = eventKey => {
+    onClose();
+    console.log(eventKey);
+  };
+  return (
+    <Popover ref={ref} className={className} style={{ left, top }} full>
+      <Dropdown.Menu onSelect={handleSelect}>
+        <Dropdown.Item eventKey={3}>Download As...</Dropdown.Item>
+        <Dropdown.Item eventKey={4}>Export PDF</Dropdown.Item>
+        <Dropdown.Item eventKey={5}>Export HTML</Dropdown.Item>
+        <Dropdown.Item eventKey={6}>Settings</Dropdown.Item>
+        <Dropdown.Item eventKey={7}>About</Dropdown.Item>
+      </Dropdown.Menu>
+    </Popover>
+  );
+};
+const ActionCell = ({ rowData, dataKey, ...props }) => {
+  function handleAction() {
+    alert(`id:${rowData[dataKey]}`);
+  }
+  return (
+    <Cell {...props} className="link-group" style={{marginTop: -10}}>
+      <IconButton appearance="subtle" onClick={handleAction} icon={<EditIcon />} />
+      <Divider vertical />
+      <Whisper placement="autoVerticalStart" trigger="click" speaker={renderMenu}>
+        <IconButton appearance="subtle" icon={<MoreHorizIcon />} />
+      </Whisper>
+    </Cell>
+  );
+};
+const DateCell = ({ rowData, dataKey, ...props }) => {
+  return (
+    <Cell {...props} style={{marginTop: 0}}>
+      <TimeAgo
+        datetime={rowData[dataKey]}
+      />
+    </Cell>
+  );
+};
+const CategoryCell = ({ rowData, dataKey, ...props }) => {
+  return (
+    <Cell {...props} style={{marginTop: 0}}>
+      {Capitalize(rowData[dataKey])}
+    </Cell>
+  );
+};
+const Capitalize = (str) => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
   return (
     <>
       <Container maxWidth={false} component={Box}marginTop="100px" classes={{ root: classes.containerRoot }}>
         <Grid container>
           <Grid item xs={12} xl={12} component={Box} marginBottom="3rem!important" classes={{ root: classes.gridItemRoot }} >
-            This is request
+            <Panel header="Become a creator program" bordered bodyFill>
+                <Table data={data} id="table"
+                      sortColumn={sortColumn}
+                      sortType={sortType}
+                      onSortColumn={handleSortColumn}
+                      autoHeight
+                      affixHeader
+                      affixHorizontalScrollbar>
+                  <Column align="center" flexGrow={1}>
+                    <HeaderCell style={{ padding: 0 }}>
+                      <div style={{ lineHeight: '40px' }}>
+                        <Checkbox
+                          inline
+                          checked={checked}
+                          indeterminate={indeterminate}
+                          onChange={handleCheckAll}
+                        />
+                      </div>
+                    </HeaderCell>
+                    <CheckCell dataKey="id" checkedKeys={checkedKeys} onChange={handleCheck} />
+                  </Column>
+                  <Column  align="center" flexGrow={1} sortable>
+                    <HeaderCell>CreatedAt</HeaderCell>
+                    <DateCell dataKey="created_on" />
+                  </Column>
+                  <Column align="center" flexGrow={1}>
+                    <HeaderCell>Photo</HeaderCell>
+                    <ImageCell dataKey="image" />
+                  </Column>
+
+                  <Column align="center" flexGrow={1} sortable>
+                    <HeaderCell>UserName</HeaderCell>
+                    <NameCell dataKey="username" />
+                  </Column>
+
+                  <Column  align="center" flexGrow={1} sortable>
+                    <HeaderCell>Email</HeaderCell>
+                    <Cell dataKey="email" />
+                  </Column>
+                  <Column  align="center" flexGrow={1} sortable>
+                    <HeaderCell>Category</HeaderCell>
+                    <CategoryCell dataKey="category" />
+                  </Column>
+                  <Column  align="center" flexGrow={1} sortable>
+                    <HeaderCell>Status</HeaderCell>
+                    <StatusCell dataKey="status" />
+                  </Column>
+                  <Column align="center" flexGrow={1}>
+                    <HeaderCell>Action</HeaderCell>
+                    <ActionCell dataKey="id" />
+                  </Column>
+                </Table>
+                <div style={{ padding: 20 }}>
+                  <Pagination
+                    prev
+                    next
+                    first
+                    last
+                    ellipsis
+                    boundaryLinks
+                    maxButtons={5}
+                    size="xs"
+                    layout={['total', '-', 'limit', '|', 'pager', 'skip']}
+                    total={data.length}
+                    limitOptions={[10, 20]}
+                    limit={limit}
+                    activePage={page}
+                    onChangePage={setPage}
+                    onChangeLimit={handleChangeLimit}
+                  />
+                </div>
+            </Panel>
           </Grid>
         </Grid>
       </Container>

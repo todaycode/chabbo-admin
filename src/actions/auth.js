@@ -7,7 +7,8 @@ import {
   AUTH_ERROR,
   LOGIN_SUCCESS,
   LOGIN_FAIL,
-  LOGOUT
+  LOGOUT,
+  GETREQUEST
 } from './types';
 
 // Load User
@@ -15,11 +16,33 @@ export const loadUser = () => async dispatch => {
   try {
     let token = localStorage.getItem('token');
     if(token) {
+      
       const res = await api.post('/getAdmin', {token:token});
-      dispatch({
-        type: LOGIN_SUCCESS,
-        payload: res.data.user
-      });
+      if(res.data.user){
+        const reqs = await api.post('/getReqs',{email: res.data.user.email});
+        const reqCreators = reqs.data.data
+        const newReqs = reqCreators.map((item, index) => {
+          return {
+            id: index,
+            email: item.requester[0].email,
+            username: item.requester[0].username,
+            category: item.category,
+            created_on: item.created_on,
+            image: item.requester[0].image,
+            status: item.status
+          };
+         }
+        )
+        dispatch({
+          type: GETREQUEST,
+          payload: newReqs
+        });
+        dispatch({
+          type: LOGIN_SUCCESS,
+          payload: res.data.user
+        });
+      }
+      
     }
   } catch (err) {
     dispatch({

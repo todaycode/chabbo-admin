@@ -1,8 +1,11 @@
+import React, { createContext } from 'react';
+import { config } from './config';
 import { createStore, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
 import rootReducer from './reducers';
 import setAuthToken from './utils/setAuthToken';
+import { initializeApp } from 'firebase/app';
 
 const initialState = {};
 
@@ -31,5 +34,20 @@ store.subscribe(() => {
     setAuthToken(token);
   }
 });
+const FirebaseContext = createContext(null);
+const FirebaseProvider  = ({ children }) => {
+  let firebase = {
+      app: null,
+  }
+  firebase.app = initializeApp(config.FirebaseConfig);
 
-export default store;
+  return (
+      <FirebaseContext.Provider value={firebase}>
+          {children}
+      </FirebaseContext.Provider>
+  )
+}
+export {
+  FirebaseProvider,
+  store
+}

@@ -1,9 +1,9 @@
 import axios from "axios";
-import store from "../store";
+import {store} from "../store";
 import { LOGOUT } from "../actions/types";
 
 // const api = axios.create({
-//   baseURL: "https://chad-sob.herokuapp.com/api",
+//   baseURL: "https://api.chabbo.app",
 //   headers: {
 //     "Content-Type": "application/json"
 //   }

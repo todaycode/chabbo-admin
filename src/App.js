@@ -1,6 +1,5 @@
 import React, { Fragment, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
-
 import CssBaseline       from "@material-ui/core/CssBaseline";
 import { ThemeProvider } from "@material-ui/core/styles";
 
@@ -13,7 +12,7 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 // Redux
 import { LOGOUT }   from 'actions/types';
 import { Provider } from 'react-redux';
-import store        from 'store';
+import {store }       from 'store';
 import { loadUser } from 'actions/auth';
 import setAuthToken from 'utils/setAuthToken';
 import AdminLayout from "layouts/Admin.js";
@@ -22,6 +21,8 @@ import Login from "views/auth/Login.js";
 import Profiles from 'components/profiles/Profiles';
 import Profile from 'components/profile/Profile';
 import './App.css';
+import 'rsuite-table/lib/less/index.less'; 
+import 'rsuite/dist/rsuite.min.css'
 
 import test from 'views/admin/Dashboard'
 const App = () => {

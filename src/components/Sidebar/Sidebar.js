@@ -31,7 +31,6 @@ export default function Sidebar({ routes, logo, dropdown, input }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [openChildren, setOpenChildren] = React.useState({});
   const isMenuOpen = Boolean(anchorEl);
-
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };

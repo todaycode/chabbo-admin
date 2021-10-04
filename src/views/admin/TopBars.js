@@ -12,7 +12,6 @@ import {TabContext, TabPanel} from "@material-ui/lab";
 
 import Header from "components/Headers/Header.js";
 import componentStyles from "assets/theme/views/admin/dashboard.js";
-import Datatable from "components/Tables/Datatable"
 const useStyles = makeStyles(componentStyles);
 
 function TopBars() {
@@ -143,37 +142,10 @@ function TopBars() {
                     onChangeIndex={handleChangeIndex}
                   >
                       <TabPanel value="0">
-                        <Datatable 
-                          title="Campaign" 
-                          header={["Name","Base Project","All Impressions","All Clicks","All Conv %", "Created", "Rotation", "Status", "Action"]} 
-                          datas={[[1,2,3,4,5,6,7,8,9],[1,2,3,4,5,6,7,8,9]]} 
-                          limit={10} 
-                          search="" 
-                          totalNum={10}
-                          render={CampaignHeaderRender}
-                           />
                       </TabPanel>
                       <TabPanel value="1">
-                        <Datatable 
-                          title="Projects Applied" 
-                          header={["Name","Created","Include"]} 
-                          datas={[{Name:"1",Created:"2",Include:"3"},[1,2,3]]} 
-                          limit={10} 
-                          search="" 
-                          totalNum={10}
-                          render={""}
-                           />
                       </TabPanel>
                       <TabPanel value="2">
-                        <Datatable 
-                          title="Login Library" 
-                          header={["Name","Base Project","Impressions","Clicks","Conv %","Created","Action"]} 
-                          datas={[[1,2,3,4,5,6,7],[1,2,3,4,5,6,7]]} 
-                          limit={10} 
-                          search="" 
-                          totalNum={10}
-                          render={""}
-                          />
                       </TabPanel>
                   </SwipeableViews>
                 </TabContext>

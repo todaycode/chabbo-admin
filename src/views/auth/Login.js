@@ -32,7 +32,7 @@ import SnackbarContent from "@material-ui/core/SnackbarContent";
 // core components
 import componentStyles from "assets/theme/views/auth/login.js";
 import { login } from '../../actions/auth';
-import bg from 'assets/img/bg.png';
+import bg from 'assets/img/bg.jpg';
 
 const useStyles = makeStyles(componentStyles);
 const useSnackBarStyles = makeStyles(snacbarStyles);
@@ -198,7 +198,7 @@ function Login({ login, isAuthenticated, alertText }) {
           </Box>
         </Container>
       </div>
-      <AuthFooter />
+      {/* <AuthFooter /> */}
     </>
   );
 }

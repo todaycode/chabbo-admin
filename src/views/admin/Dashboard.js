@@ -8,8 +8,7 @@ import ArrowDownward from "@material-ui/icons/ArrowDownward";
 import ArrowUpward from "@material-ui/icons/ArrowUpward";
 
 import Header from "components/Headers/Header.js";
-import Chart from "chart.js";
-import { chartOptions, parseOptions, chartExample1, chartExample2,} from "variables/charts.js";
+
 import componentStyles from "assets/theme/views/admin/dashboard.js";
 
 const useStyles = makeStyles(componentStyles);
@@ -19,10 +18,6 @@ function Dashboard() {
   const theme = useTheme();
   const [activeNav, setActiveNav] = React.useState(1);
   const [chartExample1Data, setChartExample1Data] = React.useState("data1");
-
-  if (window.Chart) {
-    parseOptions(Chart, chartOptions());
-  }
 
   const toggleNavs = (index) => {
     setActiveNav(index);
@@ -72,56 +67,6 @@ function Dashboard() {
                 classes={{ root: classes.cardHeaderRoot }}
               >
               </CardHeader>
-              <TableContainer>
-                <Box component={Table} alignItems="center" marginBottom="0!important" >
-                  <TableHead>
-                    <TableRow>
-                      <TableCell classes={{ root: classes.tableCellRoot + " " + classes.tableCellRootHead, }}>
-                        No
-                      </TableCell>
-                      <TableCell classes={{ root: classes.tableCellRoot + " " + classes.tableCellRootHead, }}>
-                        User Name
-                      </TableCell>
-                      <TableCell classes={{ root: classes.tableCellRoot + " " + classes.tableCellRootHead, }}>
-                        Email
-                      </TableCell>
-                      <TableCell classes={{ root: classes.tableCellRoot + " " + classes.tableCellRootHead, }}>
-                        Project
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    <TableRow>
-                      <TableCell classes={{ root: classes.tableCellRoot + " " + classes.tableCellRootBodyHead, }} component="th" variant="head" scope="row">
-                        1
-                      </TableCell>
-                      <TableCell classes={{ root: classes.tableCellRoot }}>
-                        Mooni
-                      </TableCell>
-                      <TableCell classes={{ root: classes.tableCellRoot }}>
-                        Mooncode610@gmail.com
-                      </TableCell>
-                      <TableCell classes={{ root: classes.tableCellRoot }}>
-                        Sob
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell classes={{ root: classes.tableCellRoot + " " + classes.tableCellRootBodyHead, }} component="th" variant="head" scope="row">
-                        2
-                      </TableCell>
-                      <TableCell classes={{ root: classes.tableCellRoot }}>
-                        Don
-                      </TableCell>
-                      <TableCell classes={{ root: classes.tableCellRoot }}>
-                        Mooncode610@gmail.com
-                      </TableCell>
-                      <TableCell classes={{ root: classes.tableCellRoot }}>
-                        Sob
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Box>
-              </TableContainer>
             </Card>
           </Grid>
           <Grid item xs={12} xl={4}>
@@ -190,12 +135,6 @@ function Dashboard() {
                 }}
               ></CardHeader>
               <CardContent>
-                <Box position="relative" height="350px">
-                  <Bar
-                    data={chartExample2.data}
-                    options={chartExample2.options}
-                  />
-                </Box>
               </CardContent>
             </Card>
           </Grid>

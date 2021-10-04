@@ -8,7 +8,9 @@ import {
   LOGIN_SUCCESS,
   LOGIN_FAIL,
   LOGOUT,
-  GETREQUEST
+  GETREQUEST,
+  GETFAN,
+  GETCREATOR
 } from './types';
 
 // Load User
@@ -36,6 +38,28 @@ export const loadUser = () => async dispatch => {
         dispatch({
           type: GETREQUEST,
           payload: newReqs
+        });
+        const reqfans = await api.post('/getFans',{email: res.data.user.email});
+        const fans = reqfans.data.data
+        const newFans = fans.map((item, index) => {
+          item.id = index;
+          return item;
+         }
+        )
+        dispatch({
+          type: GETFAN,
+          payload: newFans
+        });
+        const reqcreators = await api.post('/getCreators',{email: res.data.user.email});
+        const creators = reqcreators.data.data
+        const newCreators = creators.map((item, index) => {
+          item.id = index;
+          return item;
+         }
+        )
+        dispatch({
+          type: GETCREATOR,
+          payload: newCreators
         });
         dispatch({
           type: LOGIN_SUCCESS,

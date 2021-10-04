@@ -51,7 +51,7 @@ const App = () => {
               <Route exact path="/profiles" component={Profiles} />
               <Route exact path="/profile/:id" component={Profile} />
               <Route path="/admin" render={(props) => <AdminLayout {...props} />} />
-              <Route exact path="/register" component={Register} />
+              {/* <Route exact path="/register" component={Register} /> */}
               <Route exact path="/login" component={Login} />
               <Redirect from="/" to="/login" />
             </Switch>

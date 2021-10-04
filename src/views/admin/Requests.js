@@ -19,7 +19,6 @@ function Requests() {
   const classes = useStyles();
   const theme = useTheme();
   const data = useSelector(state => state.request);
-  
   const [checkedKeys, setCheckedKeys] = React.useState([]);
   const [limit, setLimit] = React.useState(10);
   const [page, setPage] = React.useState(1);
@@ -173,15 +172,19 @@ const renderMenu = ({ onClose, left, top, className }, ref) => {
 };
 const ActionCell = ({ rowData, dataKey, ...props }) => {
   function handleAction() {
-    alert(`id:${rowData[dataKey]}`);
+    console.log(rowData[dataKey])
+  }
+  function handleMoreAction() {
+    console.log(rowData[dataKey])
   }
   return (
     <Cell {...props} className="link-group" style={{marginTop: -10}}>
       <IconButton appearance="subtle" onClick={handleAction} icon={<EditIcon />} />
       <Divider vertical />
-      <Whisper placement="autoVerticalStart" trigger="click" speaker={renderMenu}>
+      {/* <Whisper placement="autoVerticalStart" trigger="click" speaker={renderMenu}>
         <IconButton appearance="subtle" icon={<MoreHorizIcon />} />
-      </Whisper>
+      </Whisper> */}
+      <IconButton appearance="subtle" onClick={handleMoreAction} icon={<EditIcon />} />
     </Cell>
   );
 };

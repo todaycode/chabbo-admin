@@ -188,11 +188,11 @@ function Login({ login, isAuthenticated, alertText }) {
               <Grid container component={Box} marginTop="1rem">
                 <Grid item xs={6} component={Box} textAlign="left">
                 </Grid>
-                <Grid item xs={6} component={Box} textAlign="right">
+                {/* <Grid item xs={6} component={Box} textAlign="right">
                   <a href="/register" className={classes.footerLinks} >
                     <b>Create new account</b>
                   </a>
-                </Grid>
+                </Grid> */}
               </Grid>
             </Grid>
           </Box>

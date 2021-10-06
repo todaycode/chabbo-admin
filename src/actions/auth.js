@@ -27,11 +27,12 @@ export const loadUser = () => async dispatch => {
           return {
             id: index,
             email: item.requester[0].email,
-            username: item.requester[0].username,
+            username: item.requester[0].username? item.requester[0].username: '',
             category: item.category,
             created_on: item.created_on,
             image: item.requester[0].image,
-            status: item.status
+            status: item.status,
+            requester: item.requester[0]
           };
          }
         )
@@ -43,6 +44,9 @@ export const loadUser = () => async dispatch => {
         const fans = reqfans.data.data
         const newFans = fans.map((item, index) => {
           item.id = index;
+          item.premium = item.premium? true: false;
+          item.name = item.name? item.name: '';
+          item.username = item.username? item.username: '';
           return item;
          }
         )
@@ -54,6 +58,8 @@ export const loadUser = () => async dispatch => {
         const creators = reqcreators.data.data
         const newCreators = creators.map((item, index) => {
           item.id = index;
+          item.name = item.name? item.name: '';
+          item.username = item.username? item.username: '';
           return item;
          }
         )

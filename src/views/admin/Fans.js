@@ -5,20 +5,25 @@ import { Box, Button, Card, CardContent, CardHeader, Container, Grid, LinearProg
          TableBody, TableContainer, TableCell, TableHead, TableRow, Typography, MenuItem, Tooltip,
          } from "@material-ui/core";
 import EditIcon from '@material-ui/icons/Edit';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import SearchIcon from '@material-ui/icons/Search';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import componentStyles from "assets/theme/views/admin/dashboard.js";
 // @material-ui/icons components
 import { Table, Column, HeaderCell, Cell  } from 'rsuite-table';
 import { Popover,Whisper, Dropdown, Divider, Pagination, Checkbox, IconButton, Panel,
-Tag} from 'rsuite';
+Tag, InputGroup, Input, Notification, toaster} from 'rsuite';
 import TimeAgo from 'timeago-react';
 import defaultUser from 'assets/img/user2.jpg';
+import { ProfileModal, AlertDialog } from 'components/ProfileModal'
 
 const dateStyle = 'en-US'
 const useStyles = makeStyles(componentStyles);
 function Fans() {
   const classes = useStyles();
   const theme = useTheme();
+  const modalRef = React.useRef();
+  const alertRef = React.useRef();
   const data = useSelector(state => state.fan);
   const premiumUser = data.filter(item => item.premium)
 
@@ -29,6 +34,11 @@ function Fans() {
   const [sortColumn, setSortColumn] = React.useState();
   const [sortType, setSortType] = React.useState();
   const [loading, setLoading] = React.useState(false);
+  const [selectedRowData, setSelectedRowData] = React.useState({});
+  const [isMore, setIsMore] = React.useState(false);
+  const [isEdit, setIsEdit] = React.useState(false);
+  const [modalInitial, setModalInitial] = React.useState(true);
+  const [searchKey, setSearchKey] = React.useState('');
 
   let checked = false;
   let indeterminate = false;
@@ -53,26 +63,72 @@ function Fans() {
     const keys = checked ? [...checkedKeys, value] : checkedKeys.filter(item => item !== value);
     setCheckedKeys(keys);
   };
-  //sort//////////////////
+   //sort//////////////////
   const getData = () => {
     if (sortColumn && sortType) {
-      return data.sort((a, b) => {
+      let newData = [];
+      if(searchKey == ''){
+        newData = data;
+      }else{
+        newData = data.filter(item => {
+          if(item.hasOwnProperty('name')){
+            if(item.name.indexOf(searchKey) > -1 ||
+            item.username.indexOf(searchKey) > -1 ||
+            item.email.indexOf(searchKey) > -1)
+              return item;
+          }else{
+            if(
+            item.username.indexOf(searchKey) > -1 ||
+            item.email.indexOf(searchKey) > -1)
+              return item;
+          }
+        })
+      }
+      return newData.sort((a, b) => {
         let x = a[sortColumn];
         let y = b[sortColumn];
-        if (typeof x === 'string') {
-          x = x.charCodeAt();
+        if(typeof x === 'string'){
+          x = x.toLowerCase();
+          y = y.toLowerCase();
+          if (sortType === 'asc') {
+            if(x > y) return true;
+            else return false;
+          } else {
+            if(y > x) return true;
+            else return false;
+          }
         }
-        if (typeof y === 'string') {
-          y = y.charCodeAt();
-        }
-        if (sortType === 'asc') {
-          return x - y;
-        } else {
-          return y - x;
+        if(typeof x === 'boolean'){
+          if (sortType === 'asc') {
+            if(x > y) return true;
+            else return false;
+          } else {
+            if(y > x) return true;
+            else return false;
+          }
         }
       });
+    }else{
+      if(searchKey == ''){
+        return data;
+      }else{
+        let newData = [];
+        newData = data.filter(item => {
+          if(item.hasOwnProperty('name')){
+            if(item.name.indexOf(searchKey) > -1 ||
+            item.username.indexOf(searchKey) > -1 ||
+            item.email.indexOf(searchKey) > -1)
+              return item;
+          }else{
+            if(
+            item.username.indexOf(searchKey) > -1 ||
+            item.email.indexOf(searchKey) > -1)
+              return item;
+          }
+        })
+        return newData;
+      }
     }
-    return data;
   };
 
   const handleSortColumn = (sortColumn, sortType) => {
@@ -189,18 +245,28 @@ const renderMenu = ({ onClose, left, top, className }, ref) => {
     </Popover>
   );
 };
+
 const ActionCell = ({ rowData, dataKey, ...props }) => {
   function handleAction() {
-    // console.log(rowData[dataKey])
+    toaster.push(<Notification type={'success'} header={'Success'} duration={3000} closable>
+      This is comming soon.</Notification>, {
+      placement: 'bottomEnd'
+    });
+    // setIsEdit(true);
+    // setSelectedRowData(rowData);
+    // alertRef.current.showModal()
   }
   function handleMoreAction() {
-    // console.log(rowData[dataKey])
+    setIsMore(true);
+    setSelectedRowData(rowData);
+    setModalInitial(false);
+    modalRef.current.showModal()
   }
   return (
     <Cell {...props} className="link-group" style={{marginTop: -10}}>
       <IconButton appearance="subtle" onClick={handleAction} icon={<EditIcon />} />
       <Divider vertical />
-      <IconButton appearance="subtle" onClick={handleMoreAction} icon={<EditIcon />} />
+      <IconButton appearance="subtle" onClick={handleMoreAction} icon={<VisibilityIcon />} />
     </Cell>
   );
 };
@@ -225,16 +291,34 @@ const CategoryCell = ({ rowData, dataKey, ...props }) => {
 const Capitalize = (str) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
+const searchFunc = (value) => {
+  setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setSearchKey(value);
+    }, 100);
+}
+
   return (
     <>
       <Container maxWidth={false} component={Box}marginTop="100px" classes={{ root: classes.containerRoot }}>
         <Grid container>
           <Grid item xs={12} xl={12} component={Box} marginBottom="3rem!important" classes={{ root: classes.gridItemRoot }} >
             <Panel header="Fans for Chabbo" bordered bodyFill>
-                <Table data={data} id="table"
+              <div>
+                  <InputGroup inside style={{width: '200px', marginBottom: '10px', 
+                  marginLeft: 'auto', marginRight: 'auto'}}>
+                    <Input defaultValue={searchKey} onChange={searchFunc}/>
+                    <InputGroup.Button>
+                      <SearchIcon />
+                    </InputGroup.Button>
+                  </InputGroup>
+                </div>
+                <Table data={getData()} id="table"
                       sortColumn={sortColumn}
                       sortType={sortType}
                       onSortColumn={handleSortColumn}
+                      loading={loading}
                       autoHeight
                       affixHeader
                       affixHorizontalScrollbar>
@@ -272,7 +356,7 @@ const Capitalize = (str) => {
                     <HeaderCell>Email</HeaderCell>
                     <Cell dataKey="email" />
                   </Column>
-                  <Column  align="center" flexGrow={4} sortable>
+                  <Column  align="center" flexGrow={4}>
                     <HeaderCell>Category</HeaderCell>
                     <CategoryCell dataKey="category" />
                   </Column>
@@ -280,7 +364,7 @@ const Capitalize = (str) => {
                     <HeaderCell>Premium</HeaderCell>
                     <PremiumCell dataKey="premium" />
                   </Column>
-                  <Column align="center" flexGrow={2}>
+                  <Column align="center" width={100} fixed="right">
                     <HeaderCell>Action</HeaderCell>
                     <ActionCell dataKey="id" />
                   </Column>
@@ -308,7 +392,9 @@ const Capitalize = (str) => {
           </Grid>
         </Grid>
       </Container>
-    </>
+      <ProfileModal isMore={isMore} data={selectedRowData} ref={modalRef} initial={modalInitial}/>
+      <AlertDialog isMore={isMore} data={selectedRowData} ref={alertRef} />
+    </> 
   );
 }
 

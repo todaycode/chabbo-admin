@@ -1,30 +1,43 @@
 import React from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch, connect } from "react-redux";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { Box, Button, Card, CardContent, CardHeader, Container, Grid, LinearProgress, FormControl, Select,
          TableBody, TableContainer, TableCell, TableHead, TableRow, Typography, MenuItem, Tooltip,
          } from "@material-ui/core";
 import EditIcon from '@material-ui/icons/Edit';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import SearchIcon from '@material-ui/icons/Search';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import componentStyles from "assets/theme/views/admin/dashboard.js";
 // @material-ui/icons components
 import { Table, Column, HeaderCell, Cell  } from 'rsuite-table';
 import { Popover,Whisper, Dropdown, Divider, Pagination, Checkbox, IconButton, Panel,
-Tag} from 'rsuite';
+Tag, InputGroup, Input} from 'rsuite';
 import TimeAgo from 'timeago-react';
+import { ProfileModal, AlertDialog } from 'components/ProfileModal';
+
+import { updateReq } from '../../actions/request';
 
 const dateStyle = 'en-US'
 const useStyles = makeStyles(componentStyles);
-function Requests() {
+function Requests({updateReq}) {
   const classes = useStyles();
   const theme = useTheme();
-  const data = useSelector(state => state.request);
+  const modalRef = React.useRef();
+  const alertRef = React.useRef();
+
+  let data = useSelector(state => state.request);
   const [checkedKeys, setCheckedKeys] = React.useState([]);
   const [limit, setLimit] = React.useState(10);
   const [page, setPage] = React.useState(1);
   const [sortColumn, setSortColumn] = React.useState();
   const [sortType, setSortType] = React.useState();
   const [loading, setLoading] = React.useState(false);
+  const [selectedRowData, setSelectedRowData] = React.useState({});
+  const [isMore, setIsMore] = React.useState(false);
+  const [isEdit, setIsEdit] = React.useState(false);
+  const [modalInitial, setModalInitial] = React.useState(true);
+  const [searchKey, setSearchKey] = React.useState('');
 
   let checked = false;
   let indeterminate = false;
@@ -52,23 +65,69 @@ function Requests() {
   //sort//////////////////
   const getData = () => {
     if (sortColumn && sortType) {
-      return data.sort((a, b) => {
+      let newData = [];
+      if(searchKey == ''){
+        newData = data;
+      }else{
+        newData = data.filter(item => {
+          if(item.hasOwnProperty('name')){
+            if(item.name.indexOf(searchKey) > -1 ||
+            item.username.indexOf(searchKey) > -1 ||
+            item.email.indexOf(searchKey) > -1)
+              return item;
+          }else{
+            if(
+            item.username.indexOf(searchKey) > -1 ||
+            item.email.indexOf(searchKey) > -1)
+              return item;
+          }
+        })
+      }
+      return newData.sort((a, b) => {
         let x = a[sortColumn];
         let y = b[sortColumn];
-        if (typeof x === 'string') {
-          x = x.charCodeAt();
+        if(typeof x === 'string'){
+          x = x.toLowerCase();
+          y = y.toLowerCase();
+          if (sortType === 'asc') {
+            if(x > y) return true;
+            else return false;
+          } else {
+            if(y > x) return true;
+            else return false;
+          }
         }
-        if (typeof y === 'string') {
-          y = y.charCodeAt();
-        }
-        if (sortType === 'asc') {
-          return x - y;
-        } else {
-          return y - x;
+        if(typeof x === 'boolean'){
+          if (sortType === 'asc') {
+            if(x > y) return true;
+            else return false;
+          } else {
+            if(y > x) return true;
+            else return false;
+          }
         }
       });
+    }else{
+      if(searchKey == ''){
+        return data;
+      }else{
+        let newData = [];
+        newData = data.filter(item => {
+          if(item.hasOwnProperty('name')){
+            if(item.name.indexOf(searchKey) > -1 ||
+            item.username.indexOf(searchKey) > -1 ||
+            item.email.indexOf(searchKey) > -1)
+              return item;
+          }else{
+            if(
+            item.username.indexOf(searchKey) > -1 ||
+            item.email.indexOf(searchKey) > -1)
+              return item;
+          }
+        })
+        return newData;
+      }
     }
-    return data;
   };
 
   const handleSortColumn = (sortColumn, sortType) => {
@@ -172,10 +231,16 @@ const renderMenu = ({ onClose, left, top, className }, ref) => {
 };
 const ActionCell = ({ rowData, dataKey, ...props }) => {
   function handleAction() {
-    console.log(rowData[dataKey])
+    setIsEdit(true);
+    setSelectedRowData(rowData);
+    alertRef.current.showModal()
   }
   function handleMoreAction() {
-    console.log(rowData[dataKey])
+    setIsMore(true);
+    setModalInitial(false);
+    let user = data.filter(item => item.email == rowData['email']);
+    setSelectedRowData(user[0].requester);
+    modalRef.current.showModal()
   }
   return (
     <Cell {...props} className="link-group" style={{marginTop: -10}}>
@@ -184,7 +249,7 @@ const ActionCell = ({ rowData, dataKey, ...props }) => {
       {/* <Whisper placement="autoVerticalStart" trigger="click" speaker={renderMenu}>
         <IconButton appearance="subtle" icon={<MoreHorizIcon />} />
       </Whisper> */}
-      <IconButton appearance="subtle" onClick={handleMoreAction} icon={<EditIcon />} />
+      <IconButton appearance="subtle" onClick={handleMoreAction} icon={<VisibilityIcon />} />
     </Cell>
   );
 };
@@ -207,16 +272,39 @@ const CategoryCell = ({ rowData, dataKey, ...props }) => {
 const Capitalize = (str) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
+const searchFunc = (value) => {
+  setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setSearchKey(value);
+    }, 100);
+}
+const deny = (email) => {
+  updateReq(email, 'denied');
+}
+const allow = (email) => {
+  updateReq(email, 'allowed');
+}
   return (
     <>
       <Container maxWidth={false} component={Box}marginTop="100px" classes={{ root: classes.containerRoot }}>
         <Grid container>
           <Grid item xs={12} xl={12} component={Box} marginBottom="3rem!important" classes={{ root: classes.gridItemRoot }} >
             <Panel header="Become a creator program" bordered bodyFill>
-                <Table data={data} id="table"
+              <div>
+                <InputGroup inside style={{width: '200px', marginBottom: '10px', 
+                marginLeft: 'auto', marginRight: 'auto'}}>
+                  <Input defaultValue={searchKey} onChange={searchFunc}/>
+                  <InputGroup.Button>
+                    <SearchIcon />
+                  </InputGroup.Button>
+                </InputGroup>
+              </div>
+                <Table data={getData()} id="table"
                       sortColumn={sortColumn}
                       sortType={sortType}
                       onSortColumn={handleSortColumn}
+                      loading={loading}
                       autoHeight
                       affixHeader
                       affixHorizontalScrollbar>
@@ -233,7 +321,7 @@ const Capitalize = (str) => {
                     </HeaderCell>
                     <CheckCell dataKey="id" checkedKeys={checkedKeys} onChange={handleCheck} />
                   </Column>
-                  <Column  align="center" flexGrow={1} sortable>
+                  <Column  align="center" flexGrow={1} sortable >
                     <HeaderCell>CreatedAt</HeaderCell>
                     <DateCell dataKey="created_on" />
                   </Column>
@@ -251,7 +339,7 @@ const Capitalize = (str) => {
                     <HeaderCell>Email</HeaderCell>
                     <Cell dataKey="email" />
                   </Column>
-                  <Column  align="center" flexGrow={1} sortable>
+                  <Column  align="center" flexGrow={1}>
                     <HeaderCell>Category</HeaderCell>
                     <CategoryCell dataKey="category" />
                   </Column>
@@ -259,7 +347,7 @@ const Capitalize = (str) => {
                     <HeaderCell>Status</HeaderCell>
                     <StatusCell dataKey="status" />
                   </Column>
-                  <Column align="center" flexGrow={1}>
+                  <Column align="center" width={100} fixed="right">
                     <HeaderCell>Action</HeaderCell>
                     <ActionCell dataKey="id" />
                   </Column>
@@ -287,8 +375,16 @@ const Capitalize = (str) => {
           </Grid>
         </Grid>
       </Container>
+     <ProfileModal isMore={isMore} data={selectedRowData} ref={modalRef} initial={modalInitial}/>
+     <AlertDialog 
+      isMore={isMore} 
+      data={selectedRowData} 
+      ref={alertRef}
+      deny={deny}
+      allow={allow}
+    />
     </>
   );
 }
 
-export default Requests;
+export default connect(null, { updateReq })(Requests);

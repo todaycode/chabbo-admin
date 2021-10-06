@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import { useSelector, useDispatch, connect } from "react-redux";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { Box, Button, Card, CardContent, CardHeader, Container, Grid, LinearProgress, FormControl, Select,
@@ -12,7 +12,7 @@ import componentStyles from "assets/theme/views/admin/dashboard.js";
 // @material-ui/icons components
 import { Table, Column, HeaderCell, Cell  } from 'rsuite-table';
 import { Popover,Whisper, Dropdown, Divider, Pagination, Checkbox, IconButton, Panel,
-Tag, InputGroup, Input} from 'rsuite';
+Tag, InputGroup, Input, Notification, toaster} from 'rsuite';
 import TimeAgo from 'timeago-react';
 import { ProfileModal, AlertDialog } from 'components/ProfileModal';
 
@@ -26,7 +26,8 @@ function Requests({updateReq}) {
   const modalRef = React.useRef();
   const alertRef = React.useRef();
 
-  let data = useSelector(state => state.request);
+  const storeData = useSelector(state => state.request)
+  const [data, setData] = React.useState([]);
   const [checkedKeys, setCheckedKeys] = React.useState([]);
   const [limit, setLimit] = React.useState(10);
   const [page, setPage] = React.useState(1);
@@ -41,7 +42,13 @@ function Requests({updateReq}) {
 
   let checked = false;
   let indeterminate = false;
-
+  useEffect(()=>{
+    if(storeData.length != 0){
+        setData(storeData);
+    }else{
+      setData([]);
+    }
+  },[storeData]);
   const handleChangeLimit = dataKey => {
     setPage(1);
     setLimit(dataKey);
@@ -232,7 +239,9 @@ const renderMenu = ({ onClose, left, top, className }, ref) => {
 const ActionCell = ({ rowData, dataKey, ...props }) => {
   function handleAction() {
     setIsEdit(true);
-    setSelectedRowData(rowData);
+    let user = data.filter(item => item.email == rowData['email']);
+    user[0].requester.reqCategory = rowData['category']; 
+    setSelectedRowData(user[0].requester);
     alertRef.current.showModal()
   }
   function handleMoreAction() {
@@ -279,15 +288,40 @@ const searchFunc = (value) => {
       setSearchKey(value);
     }, 100);
 }
-const deny = (email) => {
-  updateReq(email, 'denied');
+const deny = (_id, category) => {
+  updateReq(_id, 'denied',category).then(value => {
+    if(value){
+      toaster.push(<Notification type={'success'} header={'Success'} duration={3000} closable>
+        You updated fan type and some info successfully.</Notification>, {
+        placement: 'bottomEnd'
+      });
+    }else{
+      toaster.push(<Notification type={'error'} header={'Error'} duration={3000} closable>
+        Unfortunately, there is some issues.</Notification>, {
+        placement: 'bottomEnd'
+      });
+    }
+  });
 }
-const allow = (email) => {
-  updateReq(email, 'allowed');
+const allow = (_id, category) => {
+  updateReq(_id, 'allowed', category).then(value => {
+    if(value){
+      toaster.push(<Notification type={'success'} header={'Success'} duration={3000} closable>
+        You updated fan type and some info successfully.</Notification>, {
+        placement: 'bottomEnd'
+      });
+    }else{
+      toaster.push(<Notification type={'error'} header={'Error'} duration={3000} closable>
+        Unfortunately, there is some issues.</Notification>, {
+        placement: 'bottomEnd'
+      });
+    }
+  });
 }
   return (
     <>
       <Container maxWidth={false} component={Box}marginTop="100px" classes={{ root: classes.containerRoot }}>
+        
         <Grid container>
           <Grid item xs={12} xl={12} component={Box} marginBottom="3rem!important" classes={{ root: classes.gridItemRoot }} >
             <Panel header="Become a creator program" bordered bodyFill>

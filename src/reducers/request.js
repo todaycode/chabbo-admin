@@ -1,5 +1,6 @@
 import { 
-    GETREQUEST 
+    GETREQUEST,
+    UPDATEREQUEST 
 } from '../actions/types';
 
 const initialState = [];
@@ -10,8 +11,8 @@ function requestReducer(state = initialState, action) {
   switch (type) {
     case GETREQUEST:
       return payload;
-    // case REMOVE_ALERT:
-    //   return state.filter((alert) => alert.id !== payload);
+    case UPDATEREQUEST:
+      return payload;
     default:
       return state;
   }

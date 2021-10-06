@@ -148,11 +148,11 @@ export const AlertDialog = forwardRef((props,ref) =>{
         setOpen(false);
     };
     const handleDeny = () => {
-        deny(data.email);
+        deny(data._id, data.reqCategory);
         setOpen(false);
     };
     const handleAllow = () => {
-        allow(data.email);
+        allow(data._id, data.reqCategory);
         setOpen(false);
     };
 

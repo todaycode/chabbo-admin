@@ -301,7 +301,7 @@ const searchFunc = (value) => {
 
   return (
     <>
-      <Container maxWidth={false} component={Box}marginTop="100px" classes={{ root: classes.containerRoot }}>
+      <Container maxWidth={false} component={Box} marginTop="100px" classes={{ root: classes.containerRoot }}>
         <Grid container>
           <Grid item xs={12} xl={12} component={Box} marginBottom="3rem!important" classes={{ root: classes.gridItemRoot }} >
             <Panel header="Fans for Chabbo" bordered bodyFill>
